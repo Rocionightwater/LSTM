@@ -68,7 +68,7 @@ packet_inspected_features = packet_inspected_features \
 imp = preprocessing.Imputer(missing_values='NaN', strategy=impute_strategy, axis=0)
 packet_inspected_features = imp.fit_transform(packet_inspected_features)
 
-new_features = np.column_stack((addresses, functions, lengths, crcs, timestamp_diffs, packet_inspected_features))
+new_features = np.column_stack((addresses, lengths, crcs, timestamp_diffs, packet_inspected_features))
 print "Length: "+str(len(new_features))
 #Split the data - Training set and testing set
 X_train = new_features[:164777,:]
@@ -84,10 +84,13 @@ print str(len(X_test))
 
 #Preprocess - Mean removal and variance scaling
 X_train_scaled = preprocessing.scale(X_train)
-print X_train
 
 scaler = preprocessing.StandardScaler().fit(X_train)
 X_crossValidation_scaled = scaler.transform(X_crossValidation)
 X_test_scaled = scaler.transform(X_test)         
+# After preprocessing, function feature is added (since this one didn't need to be preprocessed)
+X_train_scaled = np.column_stack((X_train_scaled, functions[:164777]))
+X_crossValidation_scaled = np.column_stack((X_crossValidation_scaled,functions[164778:219704]))
+X_test_scaled = np.column_stack((X_test_scaled,functions[219705:len(new_features)-1]))
 
 
