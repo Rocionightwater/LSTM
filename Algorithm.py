@@ -1,42 +1,48 @@
 #!/usr/bin/env python3
 from keras.models import Sequential
 import matplotlib.pyplot as plt
-from keras.layers import Dense, Dropout,Activation
+from keras.layers import TimeDistributed, Dense, Dropout,Activation
 from keras.layers import Embedding
 from keras.layers import LSTM
+from keras.optimizers import RMSprop, Adam
 import numpy as np
 
-def lstm(x_train,y_train,x_test,y_test):
-    print(x_train.shape)
-    epochs = 1
-    batch_size = 50
-
+def one_layer_lstm(max_len):
     model = Sequential()
-    layers = {'input': 16, 'hidden1': 64, 'output': 1}
+    layers = {'input': 43, 'hidden': 128, 'output': 1}
 
-    model.add(LSTM(16,
-            input_shape=(None,16),
-            return_sequences=False))
-    #model.add(Dropout(0.2))
+    model.add(LSTM(layers['hidden'],
+        input_shape=(max_len, layers['input']),
+        return_sequences=True)
+    )
+    #model.add(Dropout(0.5))
+    
+    model.add(TimeDistributed(Dense(
+        layers['output'])))
+    model.add(Activation("softmax"))
+    
+    optimizer = Adam(lr=0.1)
+    model.compile(loss="binary_crossentropy", optimizer='adam')
+    model.summary()
+    return model  
 
-    model.add(Dense(1))
-    model.add(Activation("relu"))
+def lstm(max_len):
+    model = Sequential()
+    layers = {'input': 43, 'hidden1': 64, 'hidden2' : 128, 'output': 1}
 
-    #start = time.time()
-    model.compile(loss="mse", optimizer="rmsprop")
-    #print "Compilation Time : ", time.time() - start
-    #return model
-    print("Training...")
-    model.fit(x_train, y_train,batch_size=batch_size, nb_epoch=epochs)
-    print("Predicting...")
-    predicted = model.predict(x_test)
-    predicted = np.reshape(predicted, (predicted.size,))
-
-    print (y_test)
-    print (predicted)
-
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111)
-    # ax.plot(y_test[:93])
-    # plt.plot(predicted[:43])
-    # plt.show()
+    model.add(LSTM(layers['hidden1'],
+        input_shape=(max_len, layers['input']),
+        return_sequences=True))
+    model.add(Dropout(0.5))
+    
+    model.add(LSTM(
+        layers['hidden2'],
+        return_sequences=False))
+    model.add(Dropout(0.5))
+    
+    model.add(Dense(
+        layers['output']))
+    model.add(Activation("softmax"))
+    
+    model.compile(loss="binary_crossentropy", optimizer="adam")
+    return model  
