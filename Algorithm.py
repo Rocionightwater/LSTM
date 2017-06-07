@@ -14,7 +14,7 @@ def lstm(x_train,y_train,x_test,y_test):
     model = Sequential()
     layers = {'input': 16, 'hidden1': 64, 'output': 1}
 
-    model.add(LSTM(16,
+    model.add(LSTM(1,
             input_shape=(None,16),
             return_sequences=False))
     #model.add(Dropout(0.2))
