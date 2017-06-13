@@ -9,7 +9,16 @@ import numpy as np
 
 def one_layer_lstm(max_len,inp,hidden,outp):
     model = Sequential()
+<<<<<<< HEAD
     layers = {'input': inp, 'hidden': hidden, 'output': outp}
+=======
+    layers = {'input': 16, 'hidden1': 64, 'output': 1}
+
+    model.add(LSTM(1,
+            input_shape=(None,16),
+            return_sequences=False))
+    #model.add(Dropout(0.2))
+>>>>>>> c543bee5512fb52c6569d18489a6f6e62e3864da
 
     model.add(LSTM(layers['hidden'],
         input_shape=(max_len, layers['input']),
