@@ -7,28 +7,28 @@ from keras.layers import LSTM
 from keras.optimizers import RMSprop, Adam
 import numpy as np
 
-def one_layer_lstm(max_len):
+def one_layer_lstm(max_len,inp,hidden,outp):
     model = Sequential()
-    layers = {'input': 43, 'hidden': 128, 'output': 1}
+    layers = {'input': inp, 'hidden': hidden, 'output': outp}
 
     model.add(LSTM(layers['hidden'],
         input_shape=(max_len, layers['input']),
         return_sequences=True)
     )
-    #model.add(Dropout(0.5))
-    
+    #model.add(Dense(
+    #    layers['output']))
     model.add(TimeDistributed(Dense(
         layers['output'])))
     model.add(Activation("softmax"))
     
     optimizer = Adam(lr=0.1)
-    model.compile(loss="binary_crossentropy", optimizer='adam')
+    model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=['acc'])
     model.summary()
     return model  
 
 def lstm(max_len):
     model = Sequential()
-    layers = {'input': 43, 'hidden1': 64, 'hidden2' : 128, 'output': 1}
+    layers = {'input': 48, 'hidden1': 64, 'hidden2' : 128, 'output': 1}
 
     model.add(LSTM(layers['hidden1'],
         input_shape=(max_len, layers['input']),
@@ -44,5 +44,5 @@ def lstm(max_len):
         layers['output']))
     model.add(Activation("softmax"))
     
-    model.compile(loss="binary_crossentropy", optimizer="adam")
+    model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['acc'])
     return model  
